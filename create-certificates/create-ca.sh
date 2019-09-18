@@ -17,14 +17,14 @@ echo "******************* Task dleaning directory structure finished ***********
 
 echo "******************* Task creating directory structure for CA *******************"
 
-mkdir -p ./opt/ca/tmnt/{certs,newcerts,private}
+mkdir -p ./opt/ca/tmnt/root/{certs,newcerts,private}
 mkdir -p ./opt/ca/tmnt/intermediate/{certs,csr,newcerts,private}
 
 echo "******************* Task creation of directory structure for CA finished *******************"
 
 echo "******************* Task create files to keep track of issued certificates and their serial numbers finished *******************"
 
-cd $BASE_DIR/opt/ca/tmnt
+cd $BASE_DIR/opt/ca/tmnt/root
 touch index.txt
 echo "unique_subject = yes" > index.txt.attr
 echo FFFFFF > serial
@@ -39,23 +39,23 @@ echo "******************* Task creation of files to keep track of issued certifi
 
 echo "******************* Task copy openssl.root.cnf to /opt/ca/tmnt and replace space holder *******************"
 
-cp $BASE_DIR/static-artifacts/openssl.root.cnf $BASE_DIR/opt/ca/tmnt/openssl.root.cnf
+cp $BASE_DIR/static-artifacts/openssl.root.cnf $BASE_DIR/opt/ca/tmnt/root/openssl.root.cnf
 
-sed -i -e 's|{{BASE_DIR}}|'"$BASE_DIR"'|g' $BASE_DIR/opt/ca/tmnt/openssl.root.cnf
-rm $BASE_DIR/opt/ca/tmnt/openssl.root.cnf-e
+sed -i -e 's|{{BASE_DIR}}|'"$BASE_DIR"'|g' $BASE_DIR/opt/ca/tmnt/root/openssl.root.cnf
+rm $BASE_DIR/opt/ca/tmnt/root/openssl.root.cnf-e
 
 echo "******************* Task copy openssl.root.cnf to /opt/ca/tmnt finished and replace space holder*******************"
 
 echo "******************* Task generate root CA certificate and private key *******************"
 
-cd $BASE_DIR/opt/ca/tmnt
+cd $BASE_DIR/opt/ca/tmnt/root
 openssl req -config openssl.root.cnf \
               -x509 \
               -passout pass:rootpass \
               -days 7300 \
               -newkey rsa \
-              -keyout private/root.key.pem \
-              -out    certs/root.cert.pem
+              -keyout ./private/root.key.pem \
+              -out    ./certs/root.cert.pem
 
  cd $BASE_DIR             
 echo "******************* Task generate root CA certificate and private key finished *******************"
@@ -92,7 +92,7 @@ openssl req \
           -key ./private/intermediate.key.pem \
           -passin pass:interpass \
           -subj "/emailAddress=admin@tmnt.local/C=AU/ST=Victoria/O=TMNT Inc/CN=TMNT Intermediate CA" \
-          -out csr/intermediate.csr.pem
+          -out ./csr/intermediate.csr.pem
        
 
 cd $BASE_DIR
@@ -102,7 +102,7 @@ echo "******************* Task generate csr for intermediate CA finished *******
 echo "******************* Task generate intermediate CA signed certificate *******************"
 
 cd $BASE_DIR/opt/ca/tmnt
-openssl ca -config openssl.root.cnf \
+openssl ca -config ./root/openssl.root.cnf \
            -extensions v3_intermediate_ca \
            -notext \
            -passin pass:rootpass \
@@ -111,15 +111,6 @@ openssl ca -config openssl.root.cnf \
 cd $BASE_DIR
 
 echo "******************* Task generate intermediate CA signed certificate finished *******************"
-
-# echo "******************* Task copy openssl.intermediate.cnf-amended to /opt/ca/tmnt/intermediate *******************"
-
-# cp $BASE_DIR/static-artifacts/openssl.intermediate.cnf-amended $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf
-
-# sed -i -e 's|{{BASE_DIR}}|'"$BASE_DIR"'|g' $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf   
-# rm $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf-e
-
-# echo "******************* Task copy openssl.intermediate.cnf-amended to /opt/ca/tmnt/intermediate finished *******************"
 
 echo "******************* Task create a certificate for *.tmnt.local that is signed by intermediate CA *******************"
 
@@ -190,14 +181,14 @@ echo "******************* Task create a certificate for donatelo that is signed 
 echo "******************* Task verify certificate for *.tmnt.local *******************"
 
 openssl verify \
-        -CAfile $BASE_DIR/opt/ca/tmnt/certs/root.cert.pem \
+        -CAfile $BASE_DIR/opt/ca/tmnt/root/certs/root.cert.pem \
         -untrusted $BASE_DIR/opt/ca/tmnt/intermediate/certs/intermediate.cert.pem \
         $BASE_DIR/opt/ca/tmnt/intermediate/certs/tmnt.local.cert.pem
 echo "******************* Task verify certificate for *.tmnt.local finished *******************"
 
 echo "******************* Task verify certificate for Donatello *******************"
 openssl verify \
-        -CAfile $BASE_DIR/opt/ca/tmnt/certs/root.cert.pem \
+        -CAfile $BASE_DIR/opt/ca/tmnt/root/certs/root.cert.pem \
         -untrusted $BASE_DIR/opt/ca/tmnt/intermediate/certs/intermediate.cert.pem \
         $BASE_DIR/opt/ca/tmnt/intermediate/certs/donatello.cert.pem
 echo "******************* Task verify certificate for Donatello finished *******************"

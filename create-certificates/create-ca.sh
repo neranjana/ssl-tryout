@@ -37,11 +37,14 @@ echo FFFFFF > serial
 cd $BASE_DIR
 echo "******************* Task creation of files to keep track of issued certificates and their serial numbers finished *******************"
 
-echo "******************* Task copy openssl.root.cnf-init to /opt/ca/tmnt *******************"
+echo "******************* Task copy openssl.root.cnf to /opt/ca/tmnt and replace space holder *******************"
 
-cp $BASE_DIR/static-artifacts/openssl.root.cnf-init $BASE_DIR/opt/ca/tmnt/openssl.root.cnf
+cp $BASE_DIR/static-artifacts/openssl.root.cnf $BASE_DIR/opt/ca/tmnt/openssl.root.cnf
 
-echo "******************* Task copy openssl.root.cnf-init to /opt/ca/tmnt finished *******************"
+sed -i -e 's|{{BASE_DIR}}|'"$BASE_DIR"'|g' $BASE_DIR/opt/ca/tmnt/openssl.root.cnf
+rm $BASE_DIR/opt/ca/tmnt/openssl.root.cnf-e
+
+echo "******************* Task copy openssl.root.cnf to /opt/ca/tmnt finished and replace space holder*******************"
 
 echo "******************* Task generate root CA certificate and private key *******************"
 
@@ -57,24 +60,14 @@ openssl req -config openssl.root.cnf \
  cd $BASE_DIR             
 echo "******************* Task generate root CA certificate and private key finished *******************"
 
-echo "******************* Task copy openssl.root.cnf-amended to /opt/ca/tmnt and replace space holders *******************"
+echo "******************* Task copy openssl.intermediate.cnf to /opt/ca/tmnt/intermediate and replace space holder *******************"
 
-cp $BASE_DIR/static-artifacts/openssl.root.cnf-amended $BASE_DIR/opt/ca/tmnt/openssl.root.cnf
-
-sed -i -e 's|{{BASE_DIR}}|'"$BASE_DIR"'|g' $BASE_DIR/opt/ca/tmnt/openssl.root.cnf
-rm $BASE_DIR/opt/ca/tmnt/openssl.root.cnf-e
-
-
-echo "******************* Task copy openssl.root.cnf-amended to /opt/ca/tmnt  and replace space holders finished *******************"
-
-echo "******************* Task copy openssl.intermediate.cnf-init to /opt/ca/tmnt/intermediate *******************"
-
-cp $BASE_DIR/static-artifacts/openssl.intermediate.cnf-init $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf
+cp $BASE_DIR/static-artifacts/openssl.intermediate.cnf $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf
 
 sed -i -e 's|{{BASE_DIR}}|'"$BASE_DIR"'|g' $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf   
 rm $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf-e
 
-echo "******************* Task copy openssl.intermediate.cnf-init to /opt/ca/tmnt/intermediate finished *******************"
+echo "******************* Task copy openssl.intermediate.cnf to /opt/ca/tmnt/intermediate and replace space holderfinished *******************"
 
 echo "******************* Task generate private key for intermediate CA *******************"
 
@@ -119,14 +112,14 @@ cd $BASE_DIR
 
 echo "******************* Task generate intermediate CA signed certificate finished *******************"
 
-echo "******************* Task copy openssl.intermediate.cnf-amended to /opt/ca/tmnt/intermediate *******************"
+# echo "******************* Task copy openssl.intermediate.cnf-amended to /opt/ca/tmnt/intermediate *******************"
 
-cp $BASE_DIR/static-artifacts/openssl.intermediate.cnf-amended $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf
+# cp $BASE_DIR/static-artifacts/openssl.intermediate.cnf-amended $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf
 
-sed -i -e 's|{{BASE_DIR}}|'"$BASE_DIR"'|g' $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf   
-rm $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf-e
+# sed -i -e 's|{{BASE_DIR}}|'"$BASE_DIR"'|g' $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf   
+# rm $BASE_DIR/opt/ca/tmnt/intermediate/openssl.intermediate.cnf-e
 
-echo "******************* Task copy openssl.intermediate.cnf-amended to /opt/ca/tmnt/intermediate finished *******************"
+# echo "******************* Task copy openssl.intermediate.cnf-amended to /opt/ca/tmnt/intermediate finished *******************"
 
 echo "******************* Task create a certificate for *.tmnt.local that is signed by intermediate CA *******************"
 

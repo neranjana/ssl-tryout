@@ -1,10 +1,16 @@
 BASE_DIR=$(pwd)
-echo "******************* Task creating directory structure for CA *******************"
+
+echo "----- Task cleaning directory strucutre -----"
+
+rm -rf $BASE_DIR/ca/intermediate
+
+echo "----- Task dleaning directory structure finished -----"
+echo "----- Task creating directory structure -----"
 
 mkdir -p ./ca/intermediate/{certs,csr,newcerts,private}
 
-echo "******************* Task creation of directory structure for CA finished *******************"
-echo "******************* Task create files to keep track of issued certificates and their serial numbers finished *******************"
+echo "----- Task creation of directory structurefinished -----"
+echo "----- Task create files to keep track of issued certificates and their serial numbers finished -----"
 
 cd $BASE_DIR/ca/intermediate
 touch index.txt
@@ -12,18 +18,18 @@ echo "unique_subject = yes" > index.txt.attr
 echo FFFFFF > serial
 
 cd $BASE_DIR
-echo "******************* Task creation of files to keep track of issued certificates and their serial numbers finished *******************"
+echo "----- Task creation of files to keep track of issued certificates and their serial numbers finished -----"
 
-echo "******************* Task copy openssl.intermediate.cnf to /ca/intermediate and replace space holder *******************"
+echo "----- Task copy openssl.intermediate.cnf to /ca/intermediate and replace space holder -----"
 
 cp $BASE_DIR/static-artifacts/openssl.intermediate.cnf $BASE_DIR/ca/intermediate/openssl.intermediate.cnf
 
 sed -i -e 's|{{BASE_DIR}}|'"$BASE_DIR"'|g' $BASE_DIR/ca/intermediate/openssl.intermediate.cnf   
 rm $BASE_DIR/ca/intermediate/openssl.intermediate.cnf-e
 
-echo "******************* Task copy openssl.intermediate.cnf to /ca/intermediate and replace space holderfinished *******************"
+echo "----- Task copy openssl.intermediate.cnf to /ca/intermediate and replace space holderfinished -----"
 
-echo "******************* Task generate private key for intermediate CA *******************"
+echo "----- Task generate private key for intermediate CA -----"
 
 cd $BASE_DIR/ca/intermediate
 openssl genrsa \
@@ -33,9 +39,9 @@ openssl genrsa \
 
 cd $BASE_DIR
 
-echo "******************* Task generate private key for intermediate CA finished *******************"
+echo "----- Task generate private key for intermediate CA finished -----"
 
-echo "******************* Task generate csr for intermediate CA *******************"
+echo "----- Task generate csr for intermediate CA -----"
 
 cd $BASE_DIR/ca/intermediate
 openssl req \
@@ -51,9 +57,9 @@ openssl req \
 
 cd $BASE_DIR
 
-echo "******************* Task generate csr for intermediate CA finished *******************"
+echo "----- Task generate csr for intermediate CA finished -----"
 
-echo "******************* Task generate intermediate CA signed certificate *******************"
+echo "----- Task generate intermediate CA signed certificate -----"
 
 cd $BASE_DIR/ca
 openssl ca -config ./root/openssl.root.cnf \
@@ -64,85 +70,4 @@ openssl ca -config ./root/openssl.root.cnf \
            -out ./intermediate/certs/intermediate.cert.pem
 cd $BASE_DIR
 
-echo "******************* Task generate intermediate CA signed certificate finished *******************"
-
-echo "******************* Task create a certificate for *.tmnt.local that is signed by intermediate CA *******************"
-
-# Generating the private key
-cd $BASE_DIR/ca/intermediate
-openssl genrsa \
-        -passout pass:tmntpass \
-        -aes256 \
-        -out ./private/tmnt.local.key.pem 2048
-
-# Generatibg the signing request
-openssl req \
-        -config ./openssl.intermediate.cnf \
-        -key ./private/tmnt.local.key.pem \
-        -new \
-        -days 7300 \
-        -sha256 \
-        -passin pass:tmntpass \
-        -subj "/emailAddress=admin@tmnt.local/C=AU/ST=Victoria/O=TMNT Inc/CN=*.tmnt.local" \
-        -out ./csr/tmnt.local.csr.pem        
-
-# Generating the certificate for *.tmnt.local
-openssl ca \
-        -config ./openssl.intermediate.cnf \
-        -passin pass:interpass \
-        -extensions server_cert \
-        -days 7500 \
-        -md sha256 \
-        -in ./csr/tmnt.local.csr.pem \
-        -out ./certs/tmnt.local.cert.pem   
-
- cd $BASE_DIR            
-        
-echo "******************* Task create a certificate for *.tmnt.local that is signed by intermediate CA finished *******************"
-
-echo "******************* Task create a certificate for donatelo that is signed by intermediate CA *******************"
-cd $BASE_DIR/ca/intermediate
-# Generating the private key
-openssl genrsa \
-          -passout pass:donatellopass \
-          -aes256 \
-          -out ./private/donatello.key.pem 2048
-
-# Generating the signing request
-openssl req \
-        -config openssl.intermediate.cnf \
-        -key ./private/donatello.key.pem \
-        -new \
-        -days 7300 \
-        -sha256 \
-        -passin pass:donatellopass \
-        -subj "/emailAddress=donatello@tmnt.local/C=AU/ST=Victoria/O=TMNT Inc/CN=Donatello" \
-        -out ./csr/donatello.csr.pem
-
-# Generating the certificate for Donatello
-openssl ca \
-        -config openssl.intermediate.cnf \
-        -passin pass:interpass \
-        -extensions client_cert \
-        -days 7500 \
-        -md sha256 \
-        -in ./csr/donatello.csr.pem \
-        -out ./certs/donatello.cert.pem
-
-cd $BASE_DIR
-echo "******************* Task create a certificate for donatelo that is signed by intermediate CA finished *******************"
-
-echo "******************* Task verify certificate for *.tmnt.local *******************"
-
-openssl verify \
-        -CAfile $BASE_DIR/ca/root/certs/root.cert.pem \
-        -untrusted $BASE_DIR/ca/intermediate/certs/intermediate.cert.pem \
-        $BASE_DIR/ca/intermediate/certs/tmnt.local.cert.pem
-echo "******************* Task verify certificate for *.tmnt.local finished *******************"
-
-echo "******************* Task verify certificate for Donatello *******************"
-openssl verify \
-        -CAfile $BASE_DIR/ca/root/certs/root.cert.pem \
-        -untrusted $BASE_DIR/ca/intermediate/certs/intermediate.cert.pem \
-        $BASE_DIR/ca/intermediate/certs/donatello.cert.pem
-echo "******************* Task verify certificate for Donatello finished *******************"
+echo "----- Task generate intermediate CA signed certificate finished -----"

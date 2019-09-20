@@ -70,7 +70,7 @@ else
 
     if [ "$extensions" == "server_cert" ]; then
         echo "----- Task generate pk12 for $name -----"
-         openssl pkcs12 -export \
+        openssl pkcs12 -export \
             -in ./leaves/$name/certs/$name.cert.pem \
             -inkey ./leaves/$name/private/$name.key.pem \
             -passin $privateKeyFilePassword\
@@ -78,9 +78,18 @@ else
             -password $privateKeyFilePassword\
             -name "$name" \
             -certfile ./ca/intermediate/certs/intermediate.cert.pem
-         echo "----- Task generate pk12 for $name finished -----"
+        echo "----- Task generate pk12 for $name finished -----"
     elif [ "$extensions" == "client_cert" ]; then
-        echo "Client"
+        echo "----- Task generate pk12 for $name -----"
+        openssl pkcs12 -export \
+            -in ./leaves/$name/certs/$name.cert.pem \
+            -inkey ./leaves/$name/private/$name.key.pem \
+            -passin $privateKeyFilePassword\
+            -out ./leaves/$name/private/$name.p12 \
+            -password $privateKeyFilePassword\
+            -name "$name" \
+            -certfile ./ca/intermediate/certs/intermediate.cert.pem
+        echo "----- Task generate pk12 for $name finished -----"    
     fi
 fi
 

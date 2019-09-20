@@ -53,3 +53,12 @@ openssl req -config openssl.root.cnf \
 
  cd $BASE_DIR             
 echo "----- Task generate root CA certificate and private key finished -----"
+
+echo "----- Task create trust store jks -----"
+  keytool -import \
+    -file $BASE_DIR/ca/root/certs/root.cert.pem \
+    -alias tmnt-root \
+    -storepass changeit \
+    -keystore $BASE_DIR/ca/root/certs/tmnt-truststore.jks \
+    -noprompt
+echo "----- Task create trust store jks finished -----"  

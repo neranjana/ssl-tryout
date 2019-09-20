@@ -33,9 +33,9 @@ echo "----- Task generate private key for intermediate CA -----"
 
 cd $BASE_DIR/ca/intermediate
 openssl genrsa \
-          -passout pass:interpass \
-          -aes256 \
-          -out ./private/intermediate.key.pem 2048
+    -passout pass:interpass \
+    -aes256 \
+    -out ./private/intermediate.key.pem 2048
 
 cd $BASE_DIR
 
@@ -45,14 +45,14 @@ echo "----- Task generate csr for intermediate CA -----"
 
 cd $BASE_DIR/ca/intermediate
 openssl req \
-          -config openssl.intermediate.cnf \
-          -new \
-          -days 7300 \
-          -sha256 \
-          -key ./private/intermediate.key.pem \
-          -passin pass:interpass \
-          -subj "/emailAddress=admin@tmnt.local/C=AU/ST=Victoria/O=TMNT Inc/CN=TMNT Intermediate CA" \
-          -out ./csr/intermediate.csr.pem
+    -config openssl.intermediate.cnf \
+    -new \
+    -days 7300 \
+    -sha256 \
+    -key ./private/intermediate.key.pem \
+    -passin pass:interpass \
+    -subj "/emailAddress=admin@tmnt.local/C=AU/ST=Victoria/O=TMNT Inc/CN=TMNT Intermediate CA" \
+    -out ./csr/intermediate.csr.pem
        
 
 cd $BASE_DIR
@@ -63,11 +63,12 @@ echo "----- Task generate intermediate CA signed certificate -----"
 
 cd $BASE_DIR/ca
 openssl ca -config ./root/openssl.root.cnf \
-           -extensions v3_intermediate_ca \
-           -notext \
-           -passin pass:rootpass \
-           -in ./intermediate/csr/intermediate.csr.pem \
-           -out ./intermediate/certs/intermediate.cert.pem
+    -extensions v3_intermediate_ca \
+    -notext \
+    -passin pass:rootpass \
+    -in ./intermediate/csr/intermediate.csr.pem \
+    -out ./intermediate/certs/intermediate.cert.pem \
+    -batch
 cd $BASE_DIR
 
 echo "----- Task generate intermediate CA signed certificate finished -----"

@@ -13,14 +13,14 @@ else
     LEAF_DIR=$LEAVES_DIR/$prop_leaf_name
     mkdir $LEAF_DIR
     mkdir $LEAF_DIR/{certs,csr,private,truststore}
-    read -p "Step 9 - Press enter to generate the private key for *.tmnt.local"
+    echo "Step 9 - Press enter to generate the private key for *.tmnt.local"
     cd $BASE_DIR/intermediate
     openssl genrsa \
             -passout $prop_pem_password \
             -aes256 \
             -out $LEAF_DIR/private/$prop_leaf_name.key.pem 2048
 
-    read -p "Step 10 - Press enter to generate the CSR for *.tmnt.local"
+    echo "Step 10 - Press enter to generate the CSR for *.tmnt.local"
     cd $BASE_DIR/intermediate
     openssl req \
             -config openssl.intermediate.cnf \
@@ -33,12 +33,11 @@ else
             -out $LEAF_DIR/csr/$prop_leaf_name.csr.pem
 
 
-    read -p "Step 11 - Press enter to sign the certificate for *.tmnt.local"
+    echo "Step 11 - Press enter to sign the certificate for *.tmnt.local"
     cd $BASE_DIR/intermediate
     openssl ca \
             -config openssl.intermediate.cnf \
             -passin $prop_ca_intermediate_password \
-            -extensions $extensions \
             -days 7500 \
             -md sha256 \
             -in $LEAF_DIR/csr/$prop_leaf_name.csr.pem \
@@ -54,7 +53,7 @@ else
             -name "$prop_leaf_name" \
             -certfile $BASE_DIR/intermediate/certs/intermediate.cert.pem
 
-    read -p "Step 12 - Press enter to verify wild card leaf cert"
+    echo "Step 12 - Press enter to verify wild card leaf cert"
     openssl verify \
             -CAfile $BASE_DIR/certs/root.cert.pem \
             -untrusted $BASE_DIR/intermediate/certs/intermediate.cert.pem \

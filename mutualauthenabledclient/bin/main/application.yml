@@ -1,0 +1,10 @@
+server:
+  port: 9080
+javax:
+  net:
+    ssl:
+      trustStore: /Users/neranjana/dev/ssl-tryout/create-custom-certificates/basedir/leaves/donatello/truststore/donatello-truststore.jks
+      keyStore: /Users/neranjana/dev/ssl-tryout/create-custom-certificates/basedir/leaves/donatello/private/donatello.p12
+      keyStoreType: jks
+      keyStorePassword: donatellopass
+      trustStorePassword: donatellotrustpass

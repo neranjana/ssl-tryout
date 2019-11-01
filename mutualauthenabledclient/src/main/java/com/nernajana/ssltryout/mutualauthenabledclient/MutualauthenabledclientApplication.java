@@ -11,11 +11,10 @@ public class MutualauthenabledclientApplication {
 
 	public static void main(String[] args) {
 
-		System.setProperty("javax.net.ssl.trustStore", "../create-custom-certificates/basedir/leaves/donatello/truststore/donatello-truststore.jks");
-		System.setProperty("javax.net.ssl.trustStorePassword", "donatellotrustpass");
-		System.setProperty("javax.net.ssl.keyStore", "../create-custom-certificates/basedir/leaves/donatello/private/donatello.p12");
-//		System.setProperty("javax.net.ssl.keyStoreType", "pkcs12");
-		System.setProperty("javax.net.ssl.keyStorePassword", "donatellopass");
+		System.setProperty("javax.net.ssl.trustStore", "../create-custom-certificates/basedir/leaves/wile_e_coyote/truststore/wile_e_coyote-truststore.jks");
+		System.setProperty("javax.net.ssl.trustStorePassword", "wileecoyotetrustpass");
+		System.setProperty("javax.net.ssl.keyStore", "../create-custom-certificates/basedir/leaves/wile_e_coyote/private/wile_e_coyote.p12");
+		System.setProperty("javax.net.ssl.keyStorePassword", "wileecoyotepass");
 
 		SpringApplication.run(MutualauthenabledclientApplication.class, args);
 

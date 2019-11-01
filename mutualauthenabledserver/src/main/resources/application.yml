@@ -2,8 +2,8 @@ server:
   port: 9443
   ssl:
     enabled: true
-    key-store: ../create-custom-certificates/basedir/leaves/testtmntlocal/private/testtmntlocal.p12
-    key-store-password: tmntpass
-    trust-store: ../create-custom-certificates/basedir/leaves/testtmntlocal/truststore/testtmntlocal-truststore.jks
-    trust-store-password: tmnttrustpass
+    key-store: ../create-custom-certificates/basedir/leaves/testacmelocal/private/testacmelocal.p12
+    key-store-password: acmepass
+    trust-store: ../create-custom-certificates/basedir/leaves/testacmelocal/truststore/testacmelocal-truststore.jks
+    trust-store-password: acmetrustpass
     client-auth: need

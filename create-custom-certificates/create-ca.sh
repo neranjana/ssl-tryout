@@ -3,17 +3,17 @@
 BASE_DIR=$(pwd)/basedir
 . ca.properties
 
-echo "Step 0 - Press enter to delete $BASE_DIR"
+echo "Step 0 - deleting base directory $BASE_DIR"
 rm -fr $BASE_DIR
 
-echo "Step 1 - Press enter to make the $BASE_DIR directory tree"
+echo "Step 1 - making the $BASE_DIR directory tree"
 mkdir -p $BASE_DIR/{certs,newcerts,private}
 mkdir -p $BASE_DIR/intermediate/{certs,csr,newcerts,private}
 mkdir -p $BASE_DIR/leaves
 
 tree $BASE_DIR
 
-echo "Step 2 - Press enter to prepare auxiliary files"
+echo "Step 2 - preparing auxiliary files"
 cd $BASE_DIR
 touch index.txt
 echo "unique_subject = yes" > index.txt.attr
@@ -26,7 +26,7 @@ echo FFFFFF > serial
 
 tree $BASE_DIR
 
-echo "Step 3 - Press enter to prepare $BASE_DIR/openssl.root.cnf"
+echo "Step 3 - preparing $BASE_DIR/openssl.root.cnf"
 cat << ROOT_CONF > $BASE_DIR/openssl.root.cnf
 [ req ]
 default_bits        = 2048
@@ -55,9 +55,9 @@ basicConstraints        = critical, CA:true, pathlen:0
 keyUsage                = critical, digitalSignature, keyCertSign
 
 [ ca ]
-default_ca = ca_tmnt_root
+default_ca = $prop_ca_default_ca
 
-[ca_tmnt_root]
+[$prop_ca_default_ca]
 dir                     = $BASE_DIR
 database                = \$dir/index.txt
 new_certs_dir           = \$dir/newcerts
@@ -68,9 +68,9 @@ default_md              = sha256
 name_opt                = ca_default
 cert_opt                = ca_default
 default_days            = 7300
-policy                  = ca_tmnt_root_policy
+policy                  = $prop_ca_policy
 
-[ca_tmnt_root_policy]
+[$prop_ca_policy]
 commonName              = supplied
 stateOrProvinceName     = match
 countryName             = match
@@ -81,7 +81,7 @@ ROOT_CONF
 
 cat $BASE_DIR/openssl.root.cnf
 
-echo "Step 4 - Press enter to generate the root key pair"
+echo "Step 4 - generating the root key pair"
 cd $BASE_DIR
 openssl req -config openssl.root.cnf \
             -x509 \
@@ -98,7 +98,7 @@ openssl x509 -noout -text \
        -in certs/root.cert.pem \
        -fingerprint -sha256
 
-echo "Step 5 - Press enter to prepare $BASE_DIR/intermediate/openssl.intermediate.cnf"
+echo "Step 5 - preparing $BASE_DIR/intermediate/openssl.intermediate.cnf"
 cat << INTERMEDIATE_CONF > $BASE_DIR/intermediate/openssl.intermediate.cnf
 [ req ]
 default_bits            = 2048
@@ -127,9 +127,9 @@ basicConstraints        = critical, CA:true
 keyUsage                = critical, digitalSignature, keyCertSign
 
 [ ca ]
-default_ca = ca_tmnt_intermediate
+default_ca = $prop_ca_intermediate_default_ca
 
-[ ca_tmnt_intermediate ]
+[ $prop_ca_intermediate_default_ca ]
 dir                     = $BASE_DIR/intermediate
 database                = \$dir/index.txt
 new_certs_dir           = \$dir/newcerts
@@ -140,9 +140,9 @@ default_md              = sha256
 name_opt                = ca_default
 cert_opt                = ca_default
 default_days            = 7300
-policy                  = ca_tmnt_intermediate_policy
+policy                  = $prop_ca_intermediate_policy
 
-[ ca_tmnt_intermediate_policy ]
+[ $prop_ca_intermediate_policy ]
 countryName             = optional
 stateOrProvinceName     = optional
 localityName            = optional
@@ -168,14 +168,14 @@ INTERMEDIATE_CONF
 
 cat $BASE_DIR/intermediate/openssl.intermediate.cnf
 
-echo "Step 6 - Press enter to generate the intermediate private key"
+echo "Step 6 - generating the intermediate private key"
 cd $BASE_DIR/intermediate
 openssl genrsa \
         -aes256 \
         -passout $prop_ca_intermediate_password \
         -out private/intermediate.key.pem 2048
 
-echo "Step 7 - Press enter to generate the CSR for the intermediate CA's certificate"
+echo "Step 7 - generating the CSR for the intermediate CA's certificate"
 cd $BASE_DIR/intermediate
 openssl req \
         -config openssl.intermediate.cnf \
@@ -184,10 +184,10 @@ openssl req \
         -sha256 \
         -key private/intermediate.key.pem \
         -passin $prop_ca_intermediate_password \
-        -subj "/emailAddress=admin@tmnt.local/C=AU/ST=Victoria/O=TMNT Inc/CN=TMNT Intermediate CA" \
+        -subj "$prop_ca_intermediate_subj" \
         -out csr/intermediate.csr.pem
 
-echo "Step 8 - Press enter to sign the the intermediate CA's certificate"
+echo "Step 8 - signing the the intermediate CA's certificate"
 cd $BASE_DIR
 openssl ca -config openssl.root.cnf \
            -extensions v3_intermediate_ca \

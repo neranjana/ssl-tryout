@@ -6,21 +6,21 @@ LEAVES_DIR=$BASE_DIR/leaves
 if [ -z "$1" ]; then
    echo "Please specify the name of the configuration properties file"
 else
-    echo "----- Task reading property file $1 -----"
+    echo "Step 9 - reading property file $1 -----"
     PROPERTY_FILE=$1
 
     . $PROPERTY_FILE
     LEAF_DIR=$LEAVES_DIR/$prop_leaf_name
     mkdir $LEAF_DIR
     mkdir $LEAF_DIR/{certs,csr,private,truststore}
-    echo "Step 9 - Press enter to generate the private key for *.tmnt.local"
+    echo "Step 10 - generating the private key for $prop_leaf_name"
     cd $BASE_DIR/intermediate
     openssl genrsa \
             -passout $prop_pem_password \
             -aes256 \
             -out $LEAF_DIR/private/$prop_leaf_name.key.pem 2048
 
-    echo "Step 10 - Press enter to generate the CSR for *.tmnt.local"
+    echo "Step 11 - generating the CSR for $prop_leaf_name"
     cd $BASE_DIR/intermediate
     openssl req \
             -config openssl.intermediate.cnf \
@@ -33,7 +33,7 @@ else
             -out $LEAF_DIR/csr/$prop_leaf_name.csr.pem
 
 
-    echo "Step 11 - Press enter to sign the certificate for *.tmnt.local"
+    echo "Step 12 - signing the certificate for $prop_leaf_name"
     cd $BASE_DIR/intermediate
     openssl ca \
             -config openssl.intermediate.cnf \
@@ -53,7 +53,7 @@ else
             -name "$prop_leaf_name" \
             -certfile $BASE_DIR/intermediate/certs/intermediate.cert.pem
 
-    echo "Step 12 - Press enter to verify wild card leaf cert"
+    echo "Step 13 - verifying wild $prop_leaf_cert cert"
     openssl verify \
             -CAfile $BASE_DIR/certs/root.cert.pem \
             -untrusted $BASE_DIR/intermediate/certs/intermediate.cert.pem \

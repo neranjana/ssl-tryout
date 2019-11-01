@@ -8,8 +8,6 @@ else
     PROPERTY_FILE=$1
 
     . $PROPERTY_FILE
-        # -file $BASE_DIR/certs/root.cert.pem \
-        # -alias tmnt-root \
     keytool -import \
         -file $BASE_DIR/intermediate/certs/intermediate.cert.pem \
         -alias intermediate \
@@ -21,7 +19,6 @@ else
     IFS=', ' read -r -a subjectArray<<< "$trusted_subjects"
     for index in "${!subjectArray[@]}"
     do
-        # echo "$index ${subjectArray[index]}"
         echo "----- Task create trust store jks -----"
         keytool -import \
             -file $LEAVES_DIR/${subjectArray[index]}/certs/${subjectArray[index]}.cert.pem \
